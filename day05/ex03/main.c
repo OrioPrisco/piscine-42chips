@@ -1,6 +1,7 @@
 #include <avr/eeprom.h>
 #include <stddef.h>
 #include "uart.h"
+#include <util/delay.h>
 
 //untested
 
@@ -78,7 +79,7 @@ static size_t get_word(size_t address)
 static void update_word(size_t address, size_t word)
 {
 	eeprom_update_byte((void *)address, word >> 8);
-	eeprom_update_byte((void *)address, word & 0xF);
+	eeprom_update_byte((void *)(address + 1), word & 0xFF);
 }
 
 static size_t get_entry_address_from_offset(size_t offset)
@@ -115,7 +116,10 @@ static bool eepromalloc_get_entry(size_t id, t_entry *entry)
 
 static void update_entry(t_entry *entry)
 {
-	size_t address = entry->address;
+	uart_printstr("update_entry : ");
+	uart_print_n_hex((unsigned char *)entry, sizeof(*entry));
+	uart_printstr("\r\n");
+	size_t address = entry->entry_addr;
 	if (address % 2)
 	{
 		uart_printstr("Error ! Unaligned entry, id : ");
@@ -177,7 +181,7 @@ static size_t find_contiguous_block(size_t end, size_t start, size_t length)
 	while ( (current > length) && (current - length > start) && //still in valid bound
 		get_entry_intersecting(current - length, length, &intersecting))
 	{
-		current = intersecting.address;
+		current = intersecting.address - 1;
 	}
 	if ((current < length) || (current - length < start))
 		return 0;//failure
@@ -189,16 +193,19 @@ static size_t find_contiguous_block(size_t end, size_t start, size_t length)
 //		otherwise check for entries with either a valid memory pointer or an equal length (saves 1 size_t write)
 static bool eepromalloc_allocate_entry(size_t id, t_entry *entry, size_t length)
 {
+	uart_printstr("going to allocate\r\n");
 	t_entry free_entry;
 	if (length >= EEPROM_END || length == 0)
 		return 1;//can't allocate more memory than the eeprom has
 				//and allocating 0 bytes is silly
-	char entries = eeprom_read_byte((void *)0x1);
+	unsigned char entries = eeprom_read_byte((void *)0x1);
 	if (eepromalloc_get_entry(0, &free_entry)) // find free entry
 	{
+		uart_printstr("no freebies\r\n");
 		if (entries == MAX_ENTRY)
 			return (1);
 		t_entry lowest = get_entry_with_lowest_address();
+		uart_printstr("got lowest entry\r\n");
 		size_t new_entry_entry_end = get_entry_address_from_offset(entries + 1) + ENTRY_SIZE;
 		if (lowest.address < new_entry_entry_end)
 			return (1);//TODO : attempt to shuffle memory around to make space ?
@@ -207,13 +214,16 @@ static bool eepromalloc_allocate_entry(size_t id, t_entry *entry, size_t length)
 		free_entry.entry_addr = get_entry_address_from_offset(entries - 1);
 	}
 	size_t entries_end = get_entry_address_from_offset(entries) + ENTRY_SIZE;
+	uart_printstr("let's find a block\r\n");
 	size_t address = find_contiguous_block(EEPROM_END, entries_end, length);
+	uart_printstr("found an entry or made one\r\n");
 	if (address == 0)
 		return 1;//failure
 	free_entry.length = length;
 	free_entry.address = address;
 	free_entry.id = id;
 	update_entry(&free_entry);
+	*entry = free_entry;
 	return (0);
 }
 
@@ -253,4 +263,119 @@ bool eepromalloc_free(size_t id)
 	size_t zero = 0;
 	eeprom_update_block(&zero, (void *)entry.entry_addr, 2); // zero out entry id
 	return (1);
+}
+
+//==========
+int	ft_char_is_printable(char c)
+{
+	if (c <= 31 || c >= 127)
+		return (0);
+	return (1);
+}
+
+void	ft_print_address(void *addr)
+{
+	intptr_t		a;
+	size_t			i;
+
+	i = 0;
+	a = (intptr_t)addr;
+	while (i < sizeof(addr))
+	{
+		uart_print_hex(a >> (8* (sizeof(addr) - i - 1)));
+		i++;
+	}
+	uart_printstr(": ");
+}
+
+void	ft_print_hex(void *addr, unsigned int size)
+{
+	unsigned char	*byte;
+	int				i;
+
+	byte = addr;
+	i = 0;
+	while (i++ < 16)
+	{
+		if (size)
+		{
+			uart_print_hex(eeprom_read_byte((void *)byte));
+			byte++;
+			size--;
+		}
+		else
+		{
+			uart_printstr("  ");
+		}
+		if (!(i % 2))
+		{
+			uart_printstr(" ");
+		}
+	}	
+}
+
+void	ft_print_ascii(void *addr, unsigned int size)
+{
+	char	*c;
+
+	if (size > 16)
+		size = 16;
+	c = addr;
+	while (size--)
+	{
+		if (ft_char_is_printable(eeprom_read_byte((void *)c)))
+			uart_tx(eeprom_read_byte((void *)c));
+		else
+			uart_printstr(".");
+		c++;
+	}
+	uart_printstr("\r\n");
+}
+
+void	*ft_print_memory(void *addr, unsigned int size)
+{
+	char	*ptr;
+
+	if (size == 0)
+		return (addr);
+	ptr = addr;
+	while (1)
+	{
+		ft_print_address(ptr);
+		ft_print_hex(ptr, size);
+		ft_print_ascii(ptr, size);
+		ptr += 16;
+		if (size < 16)
+			break ;
+		size -= 16;
+	}
+	return (addr);
+}
+//==========
+#define ID 0x23
+#define ID2 0x42
+
+int main(){
+	char data[30] = "bar baz";
+	uart_init();
+	ft_print_memory(0, 1024);
+
+	if (eepromalloc_read(ID, data, 30))
+	{
+		uart_printstr("no such id\r\n");
+		if (eepromalloc_write(ID, data, 30))
+			uart_printstr("could not write !\r\n");
+	}
+	else
+		uart_printstr(data);
+	uart_printstr("\r\n");
+	if (!eepromalloc_read(ID2, data, 30))
+		uart_printstr(data);
+	else
+		uart_printstr("no such d2\r\n");
+	uart_printstr("\r\n");
+	ft_print_memory(0, 1024);
+	while(1)
+	{
+	}
 }

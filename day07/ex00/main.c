@@ -10,7 +10,7 @@ int main()
 	uart_printstr("====\r\n");
 	while (1)
 	{
-		uart_print_hex(adc_measure());
+		uart_print_hex(adc_measure8());
 		uart_printstr("\r");
 		_delay_ms(20);
 	}

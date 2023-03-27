@@ -7,14 +7,14 @@
 #include "pca9555.h"
 
 
-_Bool previous_state = 0;
 int main()
 {
 	uart_init();
 	i2c_init();
 	i2c_expander_init();
 	unsigned char i = 0;
-	_Bool current_state;
+	_Bool current_state = i2c_sw3_status();
+	_Bool previous_state = current_state;
 	while (1)
 	{
 		i2c_display_leds(i);

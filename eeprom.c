@@ -139,6 +139,15 @@ bool eepromalloc_entry_exists(size_t id)
 	return (1);
 }
 
+size_t eepromalloc_entry_size(size_t id)
+{
+	panic_if_magic_corrupted();
+	t_entry entry;
+	if (eepromalloc_get_entry(id, &entry))
+		return (0);
+	return (entry.length);
+}
+
 static t_entry get_entry_with_lowest_address()
 {
 	char entries = eeprom_read_byte((void *)0x1);
@@ -227,7 +236,7 @@ static bool eepromalloc_allocate_entry(size_t id, t_entry *entry, size_t length)
 	return (0);
 }
 
-bool eepromalloc_write(size_t id, void *buffer, size_t length)
+bool eepromalloc_write(size_t id, const void *buffer, size_t length)
 {
 	if (id == 0)
 		return (1);
@@ -268,7 +277,7 @@ bool eepromalloc_free(size_t id)
 		return (1);
 	size_t zero = 0;
 	eeprom_update_block(&zero, (void *)entry.entry_addr, 2); // zero out entry id
-	return (1);
+	return (0);
 }
 
 //==========print memory

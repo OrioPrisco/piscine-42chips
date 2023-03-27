@@ -1,17 +1,17 @@
-##Description
+# Description
 
 My code from doing the 42chips piscine  
 
-##Dependencies  
+# Dependencies  
 avr-gcc  
 make  
 avrdude  
 avr-objcopy  
 
-##Compiling
-#day00 to day03
+# Compiling
+## day00 to day03
 go to the folder and do `make`
-#day04 to day09 and rush01
+## day04 to day09 and rush01
 to compile do `make MAIN=PROGRAM_TO_COMPILE`
 ex : `make MAIN=rush01/rush01.c`
 

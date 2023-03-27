@@ -16,7 +16,7 @@ int main()
 	char i = 0;
 	while (1)
 	{
-		_7seg_display_one(I2C_EXPANDER_CA4, ascii_to_mask(i++ + '0'));
+		_7seg_display_one(I2C_EXPANDER_CA4, ascii_to_mask(i++ + '0'), _7seg_keep_mask());
 		i %= 10;
 		_delay_ms(1000);
 	}

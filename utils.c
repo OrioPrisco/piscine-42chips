@@ -72,3 +72,43 @@ void ft_strcpy(volatile char *dest, volatile char *src)
 	*dest = 0;
 }
 
+int	ft_strnlen(const char *s, int n)
+{
+	int size = 0;
+
+	while (size < n)
+	{
+		if (!*s++)
+			return (size);
+		size++;
+	}
+	return (size);
+}
+
+static int	ft_memcmp(const unsigned char *s1, const unsigned char *s2, int n)
+{
+	while (n)
+	{
+		if (*s1 != *s2)
+			break ;
+		s1++;
+		s2++;
+		n--;
+	}
+	if (n)
+		return (*s1 - *s2);
+	return (0);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, int n)
+{
+	int	len;
+
+	if (!n)
+		return (0);
+	len = ft_strnlen(s1, ft_strnlen(s2, n));
+	if (len < n)
+		len++;
+	return (ft_memcmp(s1, s2, len));
+
+}

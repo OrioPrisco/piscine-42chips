@@ -14,4 +14,6 @@ short bcd_to_dec(unsigned char data);
 unsigned char dec_to_bcd(unsigned short number);
 size_t ft_strlen(volatile char *str);
 void ft_strcpy(volatile char *dest, volatile char *src);
+int	ft_strncmp(const char *s1, const char *s2, int n);
+int	ft_strnlen(const char *s, int n);
 #endif

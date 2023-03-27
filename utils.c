@@ -109,6 +109,21 @@ int	ft_strncmp(const char *s1, const char *s2, int n)
 	len = ft_strnlen(s1, ft_strnlen(s2, n));
 	if (len < n)
 		len++;
-	return (ft_memcmp(s1, s2, len));
+	return (ft_memcmp((void *)s1, (void *)s2, len));
 
+}
+
+static size_t rotate(size_t value, size_t rotate)
+{
+	return (value << rotate) + (value >> (sizeof(value) * 8 - rotate));
+}
+
+size_t hash_str(const char* str, size_t length) {
+	size_t i = 0;
+	size_t hash = 0xDEAD;
+	while (i < length) {
+		hash ^= str[i++];
+		hash += rotate(hash, 5);
+	}
+	return hash;
 }

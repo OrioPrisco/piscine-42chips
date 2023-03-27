@@ -1,7 +1,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include "stddef.h"
+#include <stddef.h>
+
 char nibble_to_ascii(unsigned char c);
 _Bool is_hex(char c);
 _Bool is_digit(char c);
@@ -16,4 +17,5 @@ size_t ft_strlen(volatile char *str);
 void ft_strcpy(volatile char *dest, volatile char *src);
 int	ft_strncmp(const char *s1, const char *s2, int n);
 int	ft_strnlen(const char *s, int n);
+size_t hash_str(const char* str, size_t length);
 #endif

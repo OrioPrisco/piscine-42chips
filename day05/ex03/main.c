@@ -360,7 +360,7 @@ int main(){
 	uart_init();
 	ft_print_memory(0, 1024);
 
-	if (eepromalloc_read(ID, data, 30))
+	if (!eepromalloc_entry_exists(ID) ||  eepromalloc_read(ID, data, 30))
 	{
 		uart_printstr("no such id\r\n");
 		if (eepromalloc_write(ID, data, 30))

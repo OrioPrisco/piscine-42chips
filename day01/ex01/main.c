@@ -10,7 +10,7 @@ int main()
 	//formula is from the manuals, except that REG is expressed in term of desired frequency,
 	//instead of the he frequency in term of REG
 
-	DDRB |= (1 << PB1); // set led1 to output
+	DDRB |= (1 << PB1); // set led2 to output
 	TCCR1A |= (1 << COM1A0) | (1 << COM1A1);//toggle on upcounting and downcounting
 	TCCR1A |= (1 << WGM11);//|
 	TCCR1B |= (1 << WGM13);//|Mode 10, PWN Phase correct Top ICR1

@@ -271,32 +271,34 @@ void temp_sensor_trigger_measurment()
 	i2c_stop();
 }
 
-void format_temp_sensor_data(char data[7])
+void format_temp_sensor_data(unsigned char *data)
 {
-	long int humidity = data[1];
+
+	unsigned long humidity = 0;
+	unsigned long temperature = 0;
+	float humi_float;
+	float temp_float;
+
+	humidity = data[1];
 	humidity <<= 8;
-	humidity |= data[2];
+	humidity += data[2];
 	humidity <<= 4;
-	humidity |= data[3] >> 4;
+	humidity += data[3] >> 4;
 
-	float humi_float = ((float)humidity) / (1L << 20) * 100;
+	humi_float = ((float)humidity)/(1L << 20) * 100;
 
-	long int temperature = data[3] & 0x0F;
+	temperature = data[3] & 0x0F;
 	temperature <<= 8;
-	temperature |= data[4];
+	temperature += data[4];
 	temperature <<= 8;
-	temperature |= data[5];
-	
-	float temp_float = ((float)temperature) / (1L << 20) * 200 - 50;
+	temperature += data[5];
+
+	temp_float = ((float)temperature)/(1L << 20)*200.0-50.0;
 
 	uart_printstr("humidity : ");
 	uart_putnbr((int)humi_float);
-	uart_printstr(".");
-	uart_putnbr((int)(humi_float * 10) % 10);
 	uart_printstr("%\r\ntemperature : ");
 	uart_putnbr((int)temp_float);
-	uart_printstr(".");
-	uart_putnbr((int)(humi_float * 100) % 100);
 	uart_printstr("\r\n");
 }
 
@@ -316,12 +318,6 @@ void temp_sensor_print_measurment()
 	}
 	data[6] = i2c_read_ack(NACK);
 	format_temp_sensor_data(data);
-	for (int i = 0; i < 7; i++)
-	{
-		uart_print_hex(data[i]);
-		uart_printstr(" ");
-	}
-	uart_printstr("\r\n");
 	i2c_stop();
 }
 

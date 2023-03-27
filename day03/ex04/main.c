@@ -84,28 +84,28 @@ ISR(TIMER1_COMPA_vect, ISR_BLOCK)
 _Bool rising = 0;
 ISR(TIMER0_COMPA_vect, ISR_BLOCK)
 {
+	int ocr1a = OCR1A;
 	if (!rising)
 	{
-		if (OCR1A < BLINKING_FREQ_STEP)
+		if (ocr1a < BLINKING_FREQ_STEP)
 		{
-			OCR1A = 0;
+			ocr1a = 0;
 			rising = 1;
 		}
 		else
-			OCR1A -= BLINKING_FREQ_STEP;
+			ocr1a -= BLINKING_FREQ_STEP;
 	}
 	else
 	{
-		if (OCR1A > BLINKING_FREQ - BLINKING_FREQ_STEP)
+		if (ocr1a > BLINKING_FREQ - BLINKING_FREQ_STEP)
 		{
-			OCR1A = BLINKING_FREQ;
+			ocr1a = BLINKING_FREQ;
 			rising = 0;
 		}
 		else
-			OCR1A += BLINKING_FREQ_STEP;
+			ocr1a += BLINKING_FREQ_STEP;
 	}
-	uart_printstr("\r\n");
-	ft_putbnr(OCR1A);
+	OCR1A = ocr1a;
 }
 
 #define MYUBRR ((F_CPU/8/BAUD-1)/2)
@@ -137,13 +137,6 @@ void uart_tx(unsigned char c)
 	while (!(UCSR0A & (1<<UDRE0)))
 		;
 	UDR0 = c;
-}
-
-void	ft_putbnr(int i)
-{
-	if (i > 9)
-		ft_putbnr(i/10);
-	uart_tx('0'+(i%10));
 }
 
 int	ft_strnlen(const char *s, int n)
@@ -178,9 +171,11 @@ int	ft_strncmp(const char *s1, const char *s2, int n)
 {
 	int	len;
 
+	len = ft_strnlen(s1, MAX_LEN);
+	if (len != n)
+		return (1);
 	if (!n)
 		return (0);
-	len = ft_strnlen(s1, ft_strnlen(s2, n));
 	if (len < n)
 		len++;
 	return (ft_memcmp(s1, s2, len));
@@ -205,8 +200,8 @@ void uart_printstr(const char *str)
 
 void validate()
 {
-	if (!ft_strncmp(buff_passwd, password, passwd_len)
-		&& !ft_strncmp(buff_username, username, username_len))
+	if (!ft_strncmp(password, buff_passwd, passwd_len)
+		&& !ft_strncmp(username, buff_username, username_len))
 	{
 		state = VALIDATED;
 		uart_printstr("\r\nHello ");

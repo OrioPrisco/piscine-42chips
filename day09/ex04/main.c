@@ -6,8 +6,6 @@
 #include "gpio.h"
 #include "pca9555.h"
 
-
-_Bool previous_state = 0;
 int main()
 {
 	uart_init();

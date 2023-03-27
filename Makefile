@@ -6,7 +6,7 @@
 #    By: OrioPrisco <47635210+OrioPrisco@users      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/27 13:19:21 by OrioPrisc         #+#    #+#              #
-#    Updated: 2023/03/27 15:32:20 by OrioPrisc        ###   ########.fr        #
+#    Updated: 2023/03/27 21:04:54 by orio             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@ SRCS		=	aht20.c\
 				adc.c\
 				spi.c\
 				pcf8563.c\
+				eeprom.c\
 
 MAIN		=	rush01/rush01.c
 INCLUDE_DIR	=	.

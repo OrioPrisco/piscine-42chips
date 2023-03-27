@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include "uart.h"
 
+//untested
+
 //TODO : disable interrupts while doing anything
 // if 2 thngs were to attempt a combination of read write alloca or free at the same time
 // it would cause issues

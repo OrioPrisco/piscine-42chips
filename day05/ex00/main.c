@@ -4,6 +4,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "pca9555.h"
+#include "i2c.h"
 
 #define EEPROM_DATA_ADDR 0x0
 
@@ -34,7 +35,7 @@ int main()
 {
 	uart_init();
 	i2c_init();
-	init_i2c_expander();
+	i2c_expander_init();
 	eeprom_busy_wait();
 	i = eeprom_read_byte(EEPROM_DATA_ADDR);
 	LEDS_DDR	|= 0

@@ -3,6 +3,8 @@
 
 #define MAGIC_NUMBER 0x42
 
+//untested
+
 bool safe_eeprom_read(void *buffer, size_t offset, size_t length)
 {
 	if (offset = 0)

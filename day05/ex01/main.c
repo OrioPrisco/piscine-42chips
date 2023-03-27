@@ -51,22 +51,10 @@ int main()
 	eeprom_busy_wait();
 	counters = eeprom_read_word(EEPROM_DATA_ADDR);
 	index_counters = eeprom_read_byte(EEPROM_SLECTER_ADDR)%4;
-	LEDS_DDR	|= 0
-					| LED1MASK
-					| LED2MASK
-					| LED3MASK
-					| LED4MASK
-				;				// Enables Leds
-	//SW1 INT
-	SWS_DDR		&= ~SW1MASK;	// SW1 : in
-	EIMSK		|= (1 << INT0);	// enable INTerrupt 0 (SW1)
-	EICRA		|= (1 << ISC00);// enable INT0(SW1) on logical change
-	//SW2 INT
-	SWS_DDR		&= ~SW2MASK;	// SW2 : in
-	PCICR		|= (1 << PCIE2);// enable PCINT2
-	PCMSK2		|= (1 << PCINT20);// set the PCINT2 Mask to accept PCINT20, (PD4/SW2)
-
-	SREG		|= (1 << 7);	// enable Interrupts
+	leds_init();
+	sw1_int_enable();
+	sw2_int_enable();
+	sei();
 	while (1)
 	{
 		display_leds(get_counter());

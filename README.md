@@ -1,7 +1,7 @@
 # Description
 
 My code from doing the 42chips piscine  
-Note that day05 and day08 are incomplete
+Note that day08 is incomplete and rush00 is missing
 
 # Dependencies  
 avr-gcc  

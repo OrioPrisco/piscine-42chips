@@ -169,9 +169,11 @@ static bool get_entry_intersecting(size_t address, size_t length, t_entry *entry
 	for (unsigned char i = 0; i < entries; i++)
 	{
 		load_entry_at_offset(i, &temp);
+		if (temp.id == 0)
+			continue;
 		// bound check
-		if ((temp.address >= address && temp.address <= address + length)
-			|| (temp.address + temp.length >= address && temp.address + temp.length < address + length))
+		if ((temp.address >= address && temp.address < address + length)
+			|| (temp.address + temp.length - 1 >= address && temp.address + temp.length - 1 < address + length))
 		{
 			*entry = temp;
 			return (1);
@@ -190,7 +192,7 @@ static size_t find_contiguous_block(size_t end, size_t start, size_t length)
 	while ( (current > length) && (current - length > start) && //still in valid bound
 		get_entry_intersecting(current - length, length, &intersecting))
 	{
-		current = intersecting.address - 1;
+		current = intersecting.address;
 	}
 	if ((current < length) || (current - length < start))
 		return 0;//failure

@@ -8,6 +8,7 @@ avr-gcc
 make  
 avrdude  
 avr-objcopy  
+42chips devboard or a way to simulate it  
 
 # Compiling
 ## day00 to day03

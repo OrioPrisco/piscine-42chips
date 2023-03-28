@@ -306,7 +306,7 @@ static void	ft_print_address(void *addr)
 static void	ft_print_hex(void *addr, unsigned int size)
 {
 	unsigned char	*byte;
-	int				i;
+	size_t				i;
 
 	byte = addr;
 	i = 0;

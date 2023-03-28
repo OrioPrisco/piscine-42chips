@@ -1,8 +1,8 @@
 #ifndef EEPROM_H
 #define EEPROM_H
 
-#define INVALID_ID 0
-#define CLOCK_CENTURY 1
+#define EEPROM_INVALID_ID 0
+#define EEPROM_CLOCK_CENTURY 1
 
 typedef _Bool bool;
 #include <stddef.h>

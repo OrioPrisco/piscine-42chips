@@ -26,6 +26,9 @@
 #define RTC_DAYS_MASK		0b00111111
 #define RTC_MONTH_MASK		0b00011111
 
+//20 means 21st century
+#define DEFAULT_CENTURY 2000
+
 typedef struct {
 	unsigned short seconds;
 	unsigned short minutes;

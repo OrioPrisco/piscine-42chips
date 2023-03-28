@@ -1,6 +1,34 @@
 #include "pcf8563.h"
 #include "i2c.h"
 #include "utils.h"
+#include "eeprom.h"
+#include "uart.h"
+
+static unsigned int get_century()
+{
+	if (eepromalloc_entry_exists(EEPROM_CLOCK_CENTURY))
+	{
+		unsigned char century;
+		if (eepromalloc_read(EEPROM_CLOCK_CENTURY, &century, sizeof(century)))
+		{
+			uart_debugstr("get_century : error ! Couldn't read century\r\n");
+			return DEFAULT_CENTURY;
+		}
+		return ((unsigned int)century) * 100;
+	}
+	unsigned char century = DEFAULT_CENTURY/100;
+	if (eepromalloc_write(EEPROM_CLOCK_CENTURY, &century, sizeof(century)))
+		uart_debugstr("get_century : error ! Couldn't write century\r\n'");
+	return ((unsigned int)century) * 100;
+	
+}
+
+static void set_century(unsigned int year)
+{
+	unsigned char century = year / 100;
+	if (eepromalloc_write(EEPROM_CLOCK_CENTURY, &century, sizeof(century)))
+		uart_debugstr("set_century : Error ! couldn't wriite century\r\n");
+}
 
 void rtc_interpret_data(unsigned char data[15], rtc_data_t *formatted)
 {
@@ -10,7 +38,7 @@ void rtc_interpret_data(unsigned char data[15], rtc_data_t *formatted)
 		bcd_to_dec(data[RTC_HOURS]		& RTC_HOURS_MASK),
 		bcd_to_dec(data[RTC_DAYS]		& RTC_DAYS_MASK),
 		data[RTC_CENTURY_MONTH]			& RTC_MONTH_MASK,
-		bcd_to_dec(data[RTC_YEARS]) + 2000,
+		bcd_to_dec(data[RTC_YEARS]) + get_century(),
 	};
 	//TODO handle century overflow
 }
@@ -41,7 +69,7 @@ void rtc_write(rtc_data_t *data)
 	i2c_write(dec_to_bcd(0));//week days
 	i2c_write(dec_to_bcd(data->month));
 	i2c_write(dec_to_bcd(data->year));
-	//todo : write centrury to eeprom
+	set_century(data->year);
 }
 
 void rtc_init()

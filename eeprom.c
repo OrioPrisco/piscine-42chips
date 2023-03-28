@@ -98,8 +98,8 @@ static void load_entry_at_offset(size_t offset, t_entry *entry)
 
 static bool eepromalloc_get_entry(size_t id, t_entry *entry)
 {
-	char entries = eeprom_read_byte((void *)0x1);
-	for (char i = 0; i < entries; i++)
+	unsigned char entries = eeprom_read_byte((void *)0x1);
+	for (unsigned char i = 0; i < entries; i++)
 	{
 		t_entry temp;
 		load_entry_at_offset(i, &temp);
@@ -150,10 +150,10 @@ size_t eepromalloc_entry_size(size_t id)
 
 static t_entry get_entry_with_lowest_address()
 {
-	char entries = eeprom_read_byte((void *)0x1);
+	unsigned char entries = eeprom_read_byte((void *)0x1);
 	t_entry best = { .address = EEPROM_END, .length = 0};
 	t_entry temp;
-	for (char i = 0; i < entries; i++)
+	for (unsigned char i = 0; i < entries; i++)
 	{
 		load_entry_at_offset(i, &temp);
 		if (temp.address < best.address)
@@ -164,9 +164,9 @@ static t_entry get_entry_with_lowest_address()
 
 static bool get_entry_intersecting(size_t address, size_t length, t_entry *entry)
 {
-	char entries = eeprom_read_byte((void *)0x1);
+	unsigned char entries = eeprom_read_byte((void *)0x1);
 	t_entry temp;
-	for (char i = 0; i < entries; i++)
+	for (unsigned char i = 0; i < entries; i++)
 	{
 		load_entry_at_offset(i, &temp);
 		// bound check

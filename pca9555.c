@@ -147,7 +147,7 @@ void i2c_expander_init()
 	i2c_write(1 << I2C_EXPANDER_SW3);//sw3 input
 	i2c_write(0);//everything else output
 	i2c_start(I2C_EXPANDER_SLA, TW_WRITE);
-	i2c_write(I2C_EXPANDER_OUTPUT0);//DDR
+	i2c_write(I2C_EXPANDER_OUTPUT0);
 	i2c_write(~0);//reset everything to 0
 	i2c_write(0);
 	i2c_stop();

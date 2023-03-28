@@ -40,6 +40,11 @@ void rtc_interpret_data(unsigned char data[15], rtc_data_t *formatted)
 		data[RTC_CENTURY_MONTH]			& RTC_MONTH_MASK,
 		bcd_to_dec(data[RTC_YEARS]) + get_century(),
 	};
+	if (data[RTC_CENTURY_MONTH & RTC_CENTURY_MASK])
+	{
+		formatted->year += 100;
+	}
+	set_century(formatted->year);
 	//TODO handle century overflow
 }
 
